@@ -3,3 +3,4 @@
 .DS_Store
 .cpe_last10years.csv
 *.csv
+*.xml
