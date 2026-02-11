@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="ONTO_IRI"
+         xmlns="ONTO_IRI#">
+
+<owl:Ontology rdf:about="ONTO_IRI"/>
+
+<owl:ObjectProperty rdf:about="#usesComponent">
+  <rdfs:domain rdf:resource="#WebApplication"/>
+  <rdfs:range rdf:resource="#Component"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#mappedToCPE">
+  <rdfs:domain rdf:resource="#Component"/>
+  <rdfs:range rdf:resource="#CPE"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#affects">
+  <rdfs:domain rdf:resource="#CVE"/>
+  <rdfs:range rdf:resource="#CPE"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasWeakness">
+  <rdfs:domain rdf:resource="#CVE"/>
+  <rdfs:range rdf:resource="#CWE"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#exploitedBy">
+  <rdfs:domain rdf:resource="#CWE"/>
+  <rdfs:range rdf:resource="#CAPEC"/>
+</owl:ObjectProperty>
+
+<owl:DatatypeProperty rdf:about="#hasCVSSScore">
+  <rdfs:domain rdf:resource="#CVE"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hasSeverity">
+  <rdfs:domain rdf:resource="#CVE"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hasDescription">
+  <rdfs:domain rdf:resource="#CVE"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hasName">
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:Class rdf:about="#WebApplication">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Component">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#CPE">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#CVE">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#CWE">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#CAPEC">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+
+</rdf:RDF>
