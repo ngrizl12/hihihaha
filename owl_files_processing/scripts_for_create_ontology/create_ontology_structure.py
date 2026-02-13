@@ -4,7 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv(".local.env")
 
-onto = get_ontology("ONTO_IRI")
+ONTO_IRI = os.getenv("ONTO_IRI")
+ONTO_OUTPUT = os.getenv("ONTO_OUTPUT")
+
+onto = get_ontology(ONTO_IRI)
 
 with onto:
 
@@ -50,6 +53,6 @@ with onto:
     class hasName(DataProperty):
         range = [str]
 
-onto.save(file="/Users/an.s.baranova/hihihaha/owl_files_processing/owl_files/security_ontology.owl", format="rdfxml")
+onto.save(file=ONTO_OUTPUT, format="rdfxml")
 
-print("Онтология создана")
+print("Структура онтологии создана")

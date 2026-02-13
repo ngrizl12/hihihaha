@@ -3,10 +3,10 @@
          xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
          xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
          xmlns:owl="http://www.w3.org/2002/07/owl#"
-         xml:base="ONTO_IRI"
-         xmlns="ONTO_IRI#">
+         xml:base="http://vkr/security_ontology"
+         xmlns="http://vkr/security_ontology#">
 
-<owl:Ontology rdf:about="ONTO_IRI"/>
+<owl:Ontology rdf:about="http://vkr/security_ontology"/>
 
 <owl:ObjectProperty rdf:about="#usesComponent">
   <rdfs:domain rdf:resource="#WebApplication"/>
