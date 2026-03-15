@@ -48,20 +48,17 @@ while not stop_loading:
             BASE_URL,
             headers=headers,
             params=params,
-            timeout=(10, 120)  
+            timeout=(10, 120)
         )
         response.raise_for_status()
         data = response.json()
 
     except requests.exceptions.RequestException as e:
-        print(f"HTTP ERROR: {e}")
-        print("Повтор через 10 секунд...")
         time.sleep(10)
         continue
 
     if total_results is None:
         total_results = data.get("totalResults", 0)
-        print(f"Всего CPE в базе: {total_results}")
 
     products = data.get("products", [])
     if not products:
@@ -122,12 +119,9 @@ while not stop_loading:
         })
 
     params["startIndex"] += RESULTS_PER_PAGE
-    print(f"Загружено: {min(params['startIndex'], total_results)} / {total_results}")
 
     time.sleep(SLEEP_SECONDS)
 
 
 df = pd.DataFrame(rows)
 df.to_csv(OUTPUT_CSV, index=False)
-
-print(f"Сохранено CPE: {len(df)}")

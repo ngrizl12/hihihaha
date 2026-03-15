@@ -54,5 +54,3 @@ with onto:
         range = [str]
 
 onto.save(file=ONTO_OUTPUT, format="rdfxml")
-
-print("Структура онтологии создана")

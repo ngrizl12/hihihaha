@@ -91,7 +91,49 @@ for item in root.iter(NS + "Weakness"):
         "CVE_Example": ";".join(set(examples))
     })
 
+
+for item in root.iter(NS + "Category"):
+    cat_id = "CWE-" + item.attrib.get("ID", "")
+    name = item.attrib.get("Name", "")
+    status = item.attrib.get("Status", "")
+    
+    if 'DEPRECATED' in status.upper():
+        continue
+    
+    description = ""
+    desc_elem = item.find(NS + "Summary")
+    if desc_elem is not None and desc_elem.text:
+        description = re.sub(r"\s+", " ", desc_elem.text.strip())
+    
+    related_weaknesses = []
+    for rel in item.iter(NS + "Has_Member"):
+        cwe_id = rel.attrib.get('CWE_ID', '')
+        if cwe_id:
+            related_weaknesses.append(f"HasMember:CWE-{cwe_id}")
+    
+    for rel in item.iter(NS + "Has_Category"):
+        cat_id_rel = rel.attrib.get('CWE_ID', '')
+        if cat_id_rel:
+            related_weaknesses.append(f"HasCategory:CWE-{cat_id_rel}")
+    
+    for rel in item.iter(NS + "Child_Of"):
+        parent_id = rel.attrib.get('CWE_ID', '')
+        if parent_id:
+            related_weaknesses.append(f"ChildOf:CWE-{parent_id}")
+    
+    rows.append({
+        "ID": cat_id,
+        "Name": name,
+        "Description": description,
+        "Extended_Description": "",
+        "Related_Weakness": ";".join(related_weaknesses),
+        "Language": "",
+        "Technology": "",
+        "Likelihood_Of_Exploit": "not specified",
+        "Consequence": "",
+        "CVE_Example": ""
+    })
+
+
 df = pd.DataFrame(rows, columns=cols)
 df.to_csv(OUTPUT_CSV, index=False, encoding="utf-8-sig")
-
-print(f"CWE записей: {len(df)}")

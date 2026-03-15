@@ -73,5 +73,3 @@ for attack in root.findall(".//capec:Attack_Pattern", ns):
 
 df = pd.DataFrame(rows, columns=cols)
 df.to_csv(CAPEC_OUTPUT, index=False, encoding="utf-8-sig")
-
-print(f"CAPEC rows: {len(df)}")

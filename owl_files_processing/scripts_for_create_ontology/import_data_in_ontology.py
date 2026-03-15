@@ -1,8 +1,12 @@
 import pandas as pd
 from owlready2 import *
 from tqdm import tqdm
+from dotenv import load_dotenv
+import os
 
-ONTO_IRII = os.getenv("ONTO_IRII")
+load_dotenv(".local.env")
+
+ONTO_PATH = os.getenv("ONTO_PATH")
 ONTO_OUTPUT = os.getenv("ONTO_OUTPUT")
 CVE_PROCESSING_OUTPUT = os.getenv("CVE_PROCESSING_OUTPUT")
 CWE_OUTPUT_CSV = os.getenv("CWE_OUTPUT_CSV")
@@ -13,7 +17,40 @@ onto = get_ontology(ONTO_OUTPUT).load()
 entity_cache = {}
 
 def normalize(name):
-    return name.replace(":", "_").replace(".", "_").replace("-", "_")
+    return (name
+        .replace('"', '_')
+        .replace("'", '_')
+        .replace('&', '_')
+        .replace('<', '_')
+        .replace('>', '_')
+        .replace(":", "_")
+        .replace(".", "_")
+        .replace("-", "_")
+        .replace(" ", "_")
+        .replace("/", "_")
+        .replace("\\", "_")
+        .replace("%", "_")
+        .replace("!", "_")
+        .replace("?", "_")
+        .replace("=", "_")
+        .replace(";", "_")
+        .replace(",", "_")
+        .replace("(", "_")
+        .replace(")", "_")
+        .replace("[", "_")
+        .replace("]", "_")
+        .replace("{", "_")
+        .replace("}", "_")
+        .replace("|", "_")
+        .replace("*", "_")
+        .replace("#", "_")
+        .replace("@", "_")
+        .replace("$", "_")
+        .replace("^", "_")
+        .replace("`", "_")
+        .replace("~", "_")
+        .replace("+", "_")
+    )
 
 def get_or_create(cls, name):
     name = normalize(name)
@@ -36,8 +73,7 @@ with onto:
             if clean:
                 used_cpe.add(clean)
 
-    print(f"Найдено уникальных CPE: {len(used_cpe)}")
-
+    
     for cpe in tqdm(used_cpe):
         get_or_create(onto.CPE, cpe)
 
@@ -65,13 +101,11 @@ with onto:
         if not pd.isna(row["description"]):
             cve.hasDescription = [str(row["description"])] 
 
-        # CVE → CPE
         for cpe_id in str(row["MatchingCPE"]).split(";"):
             clean = cpe_id.strip()
             if clean:
                 cve.affects.append(get_or_create(onto.CPE, clean))  
 
-        # CVE → CWE
         for cwe_id in str(row["MatchingCWE"]).split(";"):
             clean = cwe_id.strip()
             if clean:
@@ -89,4 +123,4 @@ with onto:
                 cwe_instance = get_or_create(onto.CWE, clean)
                 cwe_instance.exploitedBy.append(capec_instance)  
 
-onto.save(file=ONTO_IRII, format="rdfxml")
+onto.save(file=ONTO_PATH, format="rdfxml")

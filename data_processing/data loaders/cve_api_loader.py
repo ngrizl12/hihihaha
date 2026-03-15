@@ -52,14 +52,11 @@ while True:
         data = response.json()
 
     except requests.exceptions.RequestException as e:
-        print(f"HTTP ERROR: {e}")
-        print("Повтор через 10 секунд...")
         time.sleep(10)
         continue
 
     if total_results is None:
         total_results = data.get("totalResults", 0)
-        print(f"Всего CVE в базе: {total_results}")
 
     vulns = data.get("vulnerabilities", [])
     if not vulns:
@@ -128,11 +125,8 @@ while True:
         })
 
     params["startIndex"] += RESULTS_PER_PAGE
-    print(f"Загружено: {min(params['startIndex'], total_results)} / {total_results}")
 
     time.sleep(SLEEP_SECONDS)
 
 df = pd.DataFrame(rows)
 df.to_csv(OUTPUT_CSV, index=False, encoding="utf-8-sig")
-
-print(f"Готово. Сохранено CVE: {len(df)}")
