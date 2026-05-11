@@ -235,6 +235,17 @@ def extract_capec_id(capec_obj):
     match = re.search(r'CAPEC[_-]?(\d+)', str(capec_obj), re.IGNORECASE)
     return f"CAPEC-{match.group(1)}" if match else str(capec_obj)
 
+def get_capec_for_cve(cve):
+    """Extract all CAPEC IDs associated with a CVE through CWE chain."""
+    capecs = set()
+    cwes = getattr(cve, "hasWeakness", [])
+    for cwe in cwes:
+        for capec in getattr(cwe, "exploitedBy", []):
+            capec_id = extract_capec_id(capec)
+            if capec_id and capec_id != str(capec):
+                capecs.add(capec_id)
+    return sorted(list(capecs))
+
 def get_cwe_chain(cwe_id):
     return cwe_chains_cache.get(cwe_id, []) if cwe_chains_cache else []
 
@@ -646,7 +657,14 @@ if st.session_state.step == 2:
                 for cwe in cve_cwes
             ]
             cve_risk = max(cwe_risks_list) if cwe_risks_list else base_risk
-            cve_risks.append({"cve": cve.name, "cvss": cvss, "epss": epss, "risk": cve_risk})
+            capec_ids = get_capec_for_cve(cve)
+            cve_risks.append({
+                "cve": cve.name, 
+                "cvss": cvss, 
+                "epss": epss, 
+                "risk": cve_risk,
+                "capec": capec_ids
+            })
 
         risk_values = [cr["risk"] for cr in cve_risks]
         component_risks.append({
@@ -783,6 +801,7 @@ if st.session_state.step == 4:
             st.markdown("### Уязвимости (CVE)")
             cve_data = [{
                 "CVE": cve["cve"],
+                "CAPEC": ", ".join(cve["capec"]) if cve["capec"] else "N/A",
                 "CVSS": f"{cve['cvss']:.1f}" if cve['cvss'] else "N/A",
                 "EPSS": f"{cve['epss']:.4f}" if cve['epss'] else "N/A",
                 "Риск": f"{cve['risk']:.4f}"
