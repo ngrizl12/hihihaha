@@ -22,8 +22,9 @@ YADISK_FILES = {
 }
 
 def download_from_yadisk(public_url, output_path):
+    """Download file from Yandex Disk. Returns True if file exists and is valid."""
     if os.path.exists(output_path):
-        if os.path.getsize(output_path) < 1000:
+        if os.path.getsize(output_path) < 100:
             os.remove(output_path)
         else:
             return True
@@ -37,9 +38,9 @@ def download_from_yadisk(public_url, output_path):
         with open(output_path, "wb") as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
-        return True
+        return os.path.exists(output_path) and os.path.getsize(output_path) > 100
     except Exception as e:
-        st.error(f"Ошибка загрузки {output_path}: {e}")
+        print(f"Ошибка загрузки {output_path}: {e}")
         return False
 
 ONTO_PATH = "security_ontology_full.owl"
@@ -86,9 +87,15 @@ if not st.session_state.data_loaded:
             st.progress(progress_value)
 
     update_loading("Загрузка файлов данных...", 5)
+    download_errors = []
     for filename, url in YADISK_FILES.items():
         update_loading(f"Загрузка {filename}...", 5)
-        download_from_yadisk(url, filename)
+        if not download_from_yadisk(url, filename):
+            download_errors.append(filename)
+
+    if download_errors:
+        st.error(f"Не удалось загрузить файлы: {', '.join(download_errors)}. Проверьте доступность Yandex Disk.")
+        st.stop()
 
     update_loading("Загрузка онтологии безопасности...", 20)
     onto = None
@@ -99,6 +106,9 @@ if not st.session_state.data_loaded:
             cpe_list = list(onto.CPE.instances())
         except Exception:
             cpe_list = []
+    else:
+        st.error(f"Файл онтологии не найден: {ONTO_PATH}")
+        st.stop()
 
     update_loading("Обработка онтологии...", 35)
     epss_cache, cvss_cache, cwe_chains_cache = {}, {}, {}
